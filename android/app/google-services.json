@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "331365296580",
+    "project_id": "cuatro-application-6193f",
+    "storage_bucket": "cuatro-application-6193f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:331365296580:android:f7271e208465cb72699c91",
+        "android_client_info": {
+          "package_name": "com.example.cuatro_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6JvbFVNUA-j9TDsI0HOAvOcx538pKLFE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
