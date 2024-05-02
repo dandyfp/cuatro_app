@@ -34,7 +34,10 @@ class AuthDataSource {
 
   Future<Either<String, String>> login({required String email, required String password}) async {
     try {
-      var result = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      var result = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return right(result.user?.uid ?? '');
     } on FirebaseAuthException catch (e) {
       return left(e.message ?? '');
@@ -42,7 +45,7 @@ class AuthDataSource {
   }
 
   Future<Either<String, UserData>> getUser(String uid) async {
-    DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('Ssers/$uid');
+    DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('Users/$uid');
 
     DocumentSnapshot<Map<String, dynamic>> result = await documentReference.get();
     if (result.exists) {

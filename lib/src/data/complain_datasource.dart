@@ -12,6 +12,7 @@ class ComplainDataSource {
     required String description,
     required String image,
     required String idUser,
+    String? status,
   }) async {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
@@ -21,6 +22,8 @@ class ComplainDataSource {
       'idUser': idUser,
       'image': image,
       'description': description,
+      'uid': id,
+      'status': status,
     });
 
     DocumentSnapshot<Map<String, dynamic>> result = await complaint.doc(id).get();

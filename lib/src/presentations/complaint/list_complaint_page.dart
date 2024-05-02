@@ -1,12 +1,20 @@
-import 'package:cuatro_application/src/core/components/style.dart';
-import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
-import 'package:cuatro_application/src/data/complain_datasource.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cuatro_application/src/presentations/complaint/complaint_page.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:cuatro_application/src/core/components/style.dart';
+import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
+import 'package:cuatro_application/src/data/complain_datasource.dart';
+import 'package:cuatro_application/src/data/models/user_data.dart';
+
 class ListComplaintPage extends StatelessWidget {
-  const ListComplaintPage({super.key});
+  final UserData user;
+  const ListComplaintPage({
+    super.key,
+    required this.user,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +34,14 @@ class ListComplaintPage extends StatelessWidget {
                   child: Column(
                     children: [
                       verticalSpace(50),
+                      Text(
+                        'Complaint List',
+                        style: GoogleFonts.poppins(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      verticalSpace(30),
                       Expanded(
                         child: ListView.builder(
                           itemCount: snapshot.data?.length,
@@ -39,6 +55,21 @@ class ListComplaintPage extends StatelessWidget {
                                   color: const Color.fromARGB(255, 246, 246, 246),
                                 ),
                                 child: ListTile(
+                                  onTap: () {
+                                    if (user.role == "admin") {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ComplaintPage(
+                                            idUser: user.uid ?? "",
+                                            user: user,
+                                            complainData: item,
+                                            isEdit: true,
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  },
                                   leading: Container(
                                     height: 80,
                                     width: 80,

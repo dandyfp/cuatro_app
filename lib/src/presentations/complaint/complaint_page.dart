@@ -1,6 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:io';
 
+import 'package:cuatro_application/src/data/models/complain_data.dart';
+import 'package:cuatro_application/src/data/models/user_data.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,10 +14,16 @@ import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
 import 'package:cuatro_application/src/data/complain_datasource.dart';
 
 class ComplaintPage extends StatefulWidget {
+  final UserData user;
+  final ComplainData? complainData;
   final String idUser;
+  final bool? isEdit;
   const ComplaintPage({
     super.key,
+    required this.user,
     required this.idUser,
+    this.isEdit,
+    this.complainData,
   });
 
   @override
@@ -174,6 +183,22 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     borderColor: Colors.black,
                   ),
                   verticalSpace(30),
+                  if (widget.user.role == "admin")
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Status',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.black,
+                          ),
+                        ),
+                        DropdownSearch(),
+                        verticalSpace(30)
+                      ],
+                    ),
                   Button(
                     onPressed: () async {
                       final response = await ComplainDataSource().uploadProfilePicture(

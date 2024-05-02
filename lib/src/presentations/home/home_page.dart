@@ -1,5 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cuatro_application/src/data/auth_datasource.dart';
+import 'package:cuatro_application/src/data/models/user_data.dart';
 import 'package:cuatro_application/src/presentations/complaint/list_complaint_page.dart';
+import 'package:cuatro_application/src/presentations/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cuatro_application/src/presentations/complaint/complaint_page.dart';
@@ -16,6 +19,14 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  @override
+  void initState() {
+    getUserDetail();
+    super.initState();
+  }
+
+  UserData? userData;
+
   PageController pageController = PageController();
   int selectedPage = 0;
   @override
@@ -28,6 +39,7 @@ class _HomePageState extends State<HomePage> {
             context,
             MaterialPageRoute(
               builder: (context) => ComplaintPage(
+                user: userData ?? UserData(),
                 idUser: widget.idUser,
               ),
             ),
@@ -67,10 +79,12 @@ class _HomePageState extends State<HomePage> {
                 selectedPage = value;
               },
             ),
-            children: const [
-              ListComplaintPage(),
-              Center(
-                child: Text('m'),
+            children: [
+              ListComplaintPage(
+                user: userData ?? UserData(),
+              ),
+              ProfilePage(
+                id: widget.idUser,
               ),
             ],
           ),
@@ -161,5 +175,11 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
+  }
+
+  Future<void> getUserDetail() async {
+    var result = await AuthDataSource().getUser(widget.idUser);
+    result.fold((l) => null, (r) => userData = r);
+    setState(() {});
   }
 }
