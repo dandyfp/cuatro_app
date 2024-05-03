@@ -7,6 +7,17 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
 class ComplainDataSource {
+  Future<Either<String, String>> updateComplaintData(ComplainData complaintData) async {
+    DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('complaints/${complaintData.uid}');
+
+    DocumentSnapshot<Map<String, dynamic>> result = await documentReference.get();
+    if (result.exists) {
+      return right('Success');
+    } else {
+      return left('Failed');
+    }
+  }
+
   Future<Either<String, ComplainData>> createComplain({
     required String location,
     required String description,
@@ -17,19 +28,23 @@ class ComplainDataSource {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
     CollectionReference<Map<String, dynamic>> complaint = FirebaseFirestore.instance.collection('complaints');
-    await complaint.doc(id).set({
-      'location': location,
-      'idUser': idUser,
-      'image': image,
-      'description': description,
-      'uid': id,
-      'status': status,
-    });
+    await complaint.doc(id).set(
+      {
+        'location': location,
+        'idUser': idUser,
+        'image': image,
+        'description': description,
+        'uid': id,
+        'status': status,
+      },
+    );
 
     DocumentSnapshot<Map<String, dynamic>> result = await complaint.doc(id).get();
     if (result.exists) {
       return right(
-        ComplainData.fromJson(result.data()!),
+        ComplainData.fromJson(
+          result.data()!,
+        ),
       );
     } else {
       return left('failed to create complaint');

@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
               builder: (context) => ComplaintPage(
                 user: userData ?? UserData(),
                 idUser: widget.idUser,
+                isEdit: false,
               ),
             ),
           ),

@@ -13,12 +13,14 @@ class ComplainData {
   String? location;
   String? description;
   String? image;
+  String? status;
 
   ComplainData({
     this.location,
     this.description,
     this.image,
     this.uid,
+    this.status,
   });
 
   factory ComplainData.fromJson(Map<String, dynamic> json) => ComplainData(
@@ -26,6 +28,7 @@ class ComplainData {
         description: json["description"],
         image: json["image"],
         uid: json["uid"],
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -33,5 +36,6 @@ class ComplainData {
         "description": description,
         "image": image,
         "uid": uid,
+        "status": status,
       };
 }
