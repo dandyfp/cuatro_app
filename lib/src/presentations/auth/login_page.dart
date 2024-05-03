@@ -1,3 +1,4 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cuatro_application/src/core/components/button.dart';
 import 'package:cuatro_application/src/core/components/textfield.dart';
 import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
@@ -19,6 +20,7 @@ final TextEditingController emailController = TextEditingController();
 final TextEditingController passwordController = TextEditingController();
 
 class _LoginPageState extends State<LoginPage> {
+  bool isLoadingLogin = false;
   bool isObscure = true;
   @override
   Widget build(BuildContext context) {
@@ -88,18 +90,34 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   verticalSpace(50),
                   Button(
+                    isLoading: isLoadingLogin,
+                    isDisabled: isLoadingLogin,
                     onPressed: () async {
-                      final response = await AuthDataSource().login(email: emailController.text, password: passwordController.text);
+                      setState(() {
+                        isLoadingLogin = true;
+                      });
+                      final response = await AuthDataSource().login(
+                        email: emailController.text,
+                        password: passwordController.text,
+                      );
+                      setState(() {
+                        response.fold(
+                          (l) => AnimatedSnackBar.material(l, type: AnimatedSnackBarType.error).show(context),
+                          (r) => AnimatedSnackBar.material('Success', type: AnimatedSnackBarType.success).show(context),
+                        );
+                        isLoadingLogin = false;
+                      });
                       if (response.isRight()) {
                         String uid = response.getOrElse(() => '');
                         Navigator.pushReplacement(
-                            // ignore: use_build_context_synchronously
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomePage(
-                                idUser: uid,
-                              ),
-                            ));
+                          // ignore: use_build_context_synchronously
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(
+                              idUser: uid,
+                            ),
+                          ),
+                        );
                       }
                     },
                     child: Center(

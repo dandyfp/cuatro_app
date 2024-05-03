@@ -241,9 +241,11 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           ),
                         ),
                         DropdownSearch(
+                          selectedItem: widget.complainData?.status ?? 'Choose Status',
                           onChanged: (value) {
-                            status = value;
-                            setState(() {});
+                            setState(() {
+                              status = value;
+                            });
                           },
                           items: const [
                             'Pending',

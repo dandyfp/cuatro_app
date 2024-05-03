@@ -12,6 +12,9 @@ class ComplainDataSource {
 
     DocumentSnapshot<Map<String, dynamic>> result = await documentReference.get();
     if (result.exists) {
+      await documentReference.update({
+        'status': complaintData.status,
+      });
       return right('Success');
     } else {
       return left('Failed');
@@ -23,7 +26,6 @@ class ComplainDataSource {
     required String description,
     required String image,
     required String idUser,
-    String? status,
   }) async {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
@@ -35,7 +37,7 @@ class ComplainDataSource {
         'image': image,
         'description': description,
         'uid': id,
-        'status': status,
+        'status': 'Waiting',
       },
     );
 
