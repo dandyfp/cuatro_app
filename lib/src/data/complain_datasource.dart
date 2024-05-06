@@ -7,6 +7,19 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
 class ComplainDataSource {
+  Future<Either<String, String>> deleteComplaint(String uid) async {
+    DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('complaints/$uid');
+    DocumentSnapshot<Map<String, dynamic>> result = await documentReference.get();
+
+    if (result.exists) {
+      await documentReference.delete();
+
+      return right('Success Delete');
+    } else {
+      return left('Failed delete');
+    }
+  }
+
   Future<Either<String, String>> updateComplaintData(ComplainData complaintData) async {
     DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('complaints/${complaintData.uid}');
 
@@ -26,6 +39,8 @@ class ComplainDataSource {
     required String description,
     required String image,
     required String idUser,
+    String? latitude,
+    String? longitude,
   }) async {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
@@ -38,6 +53,8 @@ class ComplainDataSource {
         'description': description,
         'uid': id,
         'status': 'Waiting',
+        'latitude': latitude,
+        'longitude': longitude,
       },
     );
 
@@ -58,6 +75,8 @@ class ComplainDataSource {
     required String location,
     required String description,
     required String idUser,
+    String? latitude,
+    String? longitude,
   }) async {
     String fileName = basename(imageFile.path);
 
@@ -71,6 +90,8 @@ class ComplainDataSource {
         location: location,
         image: downloadUrl,
         idUser: idUser,
+        latitude: latitude,
+        longitude: longitude,
       );
 
       return createComplaint;

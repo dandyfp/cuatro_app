@@ -7,6 +7,20 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthDataSource {
   String? getInLoggedUser() => FirebaseAuth.instance.currentUser?.uid;
 
+  Future<Either<String, String>> resetPassword(
+    AuthRequest req,
+  ) async {
+    await login(email: req.email ?? "", password: req.password ?? "");
+    if (getInLoggedUser() != null) {
+      await FirebaseAuth.instance.currentUser!.delete();
+
+      // await register(req: req);
+      return right('Success Reset Password');
+    } else {
+      return left('Failed to get in logged user');
+    }
+  }
+
   Future<Either<String, String>> register({
     required AuthRequest req,
   }) async {

@@ -5,6 +5,7 @@ import 'package:cuatro_application/src/presentations/auth/login_page.dart';
 import 'package:cuatro_application/src/presentations/home/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +20,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SpalshScreen(),
+      theme: ThemeData(
+        useMaterial3: false,
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.dark,
+        ),
+      ),
+      home: const SpalshScreen(),
     );
   }
 }

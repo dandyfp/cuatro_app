@@ -2,6 +2,7 @@
 import 'package:cuatro_application/src/presentations/complaint/complaint_page.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:cuatro_application/src/core/components/style.dart';
@@ -23,40 +24,55 @@ class ListComplaintPage extends StatelessWidget {
       body: FutureBuilder(
         future: ComplainDataSource().getAllComplaint(),
         builder: (context, snapshot) {
+          Future refresh() async {
+            await ComplainDataSource().getAllComplaint();
+          }
+
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: loadingPrimary(),
             );
           }
           return snapshot.data!.isNotEmpty
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                  child: Column(
-                    children: [
-                      verticalSpace(50),
-                      Text(
-                        'Complaint List',
-                        style: GoogleFonts.poppins(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
+              ? RefreshIndicator(
+                  onRefresh: () => refresh(),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: Column(
+                      children: [
+                        verticalSpace(50),
+                        Text(
+                          'Complaint List',
+                          style: GoogleFonts.poppins(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      verticalSpace(30),
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: snapshot.data?.length,
-                          itemBuilder: (context, index) {
-                            var item = snapshot.data?[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(12),
-                                  color: const Color.fromARGB(255, 246, 246, 246),
-                                ),
-                                child: ListTile(
-                                  onTap: () {
-                                    if (user.role == "admin") {
+                        verticalSpace(20),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            'Hi, \nWelcome ${user.name}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: snapshot.data?.length,
+                            itemBuilder: (context, index) {
+                              var item = snapshot.data?[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 10.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: const Color.fromARGB(255, 246, 246, 246),
+                                  ),
+                                  child: ListTile(
+                                    onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
@@ -68,35 +84,35 @@ class ListComplaintPage extends StatelessWidget {
                                           ),
                                         ),
                                       );
-                                    }
-                                  },
-                                  leading: Container(
-                                    height: 80,
-                                    width: 80,
-                                    decoration: const BoxDecoration(
-                                      color: Colors.amber,
+                                    },
+                                    leading: Container(
+                                      height: 80,
+                                      width: 80,
+                                      decoration: const BoxDecoration(
+                                        color: Colors.amber,
+                                      ),
+                                      child: ExtendedImage.network(
+                                        item?.image ?? '',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
-                                    child: ExtendedImage.network(
-                                      item?.image ?? '',
-                                      fit: BoxFit.cover,
+                                    title: Text(
+                                      'Location : ${item?.location}',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 14,
+                                        color: Colors.black,
+                                      ),
                                     ),
+                                    subtitle: Text('Description : ${item?.description ?? ''}'),
                                   ),
-                                  title: Text(
-                                    'Location : ${item?.location}',
-                                    style: GoogleFonts.poppins(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  subtitle: Text('Location : ${item?.description ?? ''}'),
                                 ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 )
               : const Center(

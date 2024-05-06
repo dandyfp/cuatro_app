@@ -4,7 +4,9 @@ import 'dart:io';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cuatro_application/src/data/models/complain_data.dart';
 import 'package:cuatro_application/src/data/models/user_data.dart';
+import 'package:cuatro_application/src/presentations/home/home_page.dart';
 import 'package:dropdown_search/dropdown_search.dart';
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -13,12 +15,14 @@ import 'package:cuatro_application/src/core/components/button.dart';
 import 'package:cuatro_application/src/core/components/textfield.dart';
 import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
 import 'package:cuatro_application/src/data/complain_datasource.dart';
+import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 
 class ComplaintPage extends StatefulWidget {
   final UserData user;
   final ComplainData? complainData;
   final String idUser;
   final bool? isEdit;
+
   const ComplaintPage({
     super.key,
     required this.user,
@@ -36,6 +40,19 @@ class _ComplaintPageState extends State<ComplaintPage> {
   final TextEditingController descriptionController = TextEditingController();
   XFile? xFile;
   String? status;
+  bool isLoadingEdit = false;
+  bool isLoading = false;
+  bool isLoadingDelete = false;
+  String? latitude;
+  String? longitude;
+
+  @override
+  void dispose() {
+    locationController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -74,15 +91,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                         border: Border.all(color: Colors.black),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: NetworkImage(
-                              widget.complainData?.image ?? '',
-                            ),
-                          ),
-                        ),
-                      ),
+                      child: ExtendedImage.network(widget.complainData?.image ?? ''),
                     )
                   : GestureDetector(
                       onTap: () {
@@ -195,10 +204,30 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       ),
                     ),
                   verticalSpace(4),
-                  if (widget.user.role != "admin")
+                  if (widget.complainData?.location == null)
                     KTextField(
+                      minLines: 1,
+                      maxLines: 2,
+                      isOption: true,
                       borderColor: Colors.black,
                       controller: locationController,
+                      onTap: () async {
+                        return showModalBottomSheet(
+                          context: context,
+                          builder: (context) => OpenStreetMapSearchAndPick(
+                            buttonColor: Colors.blue,
+                            buttonText: 'Set Location',
+                            onPicked: (pickedData) {
+                              setState(() {
+                                locationController.text = pickedData.addressName;
+                                longitude = pickedData.latLong.longitude.toString();
+                                latitude = pickedData.latLong.latitude.toString();
+                              });
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
+                      },
                     ),
                   verticalSpace(30),
                   Text(
@@ -220,7 +249,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       ),
                     ),
                   verticalSpace(4),
-                  if (widget.user.role != "admin")
+                  if (widget.complainData?.description == null)
                     KTextField(
                       maxLines: 5,
                       minLines: 5,
@@ -257,18 +286,41 @@ class _ComplaintPageState extends State<ComplaintPage> {
                         verticalSpace(30)
                       ],
                     ),
-                  widget.isEdit == false
+                  widget.isEdit == false && widget.user.role == null
                       ? Button(
+                          isLoading: isLoading,
+                          isDisabled: isLoading,
                           onPressed: () async {
+                            setState(() {
+                              isLoading = true;
+                            });
                             final response = await ComplainDataSource().uploadProfilePicture(
                               imageFile: File(xFile!.path),
                               location: locationController.text,
                               description: descriptionController.text,
                               idUser: widget.idUser,
+                              latitude: latitude,
+                              longitude: longitude,
                             );
+                            setState(() {
+                              isLoading = false;
+                            });
 
                             // ignore: use_build_context_synchronously
-                            if (response.isRight()) AnimatedSnackBar.material('Success', type: AnimatedSnackBarType.success).show(context);
+                            if (response.isRight()) {
+                              // ignore: use_build_context_synchronously
+                              AnimatedSnackBar.material('Success', type: AnimatedSnackBarType.success).show(context);
+                              Navigator.push(
+                                // ignore: use_build_context_synchronously
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomePage(
+                                    idUser: widget.user.uid ?? '',
+                                  ),
+                                ),
+                              );
+                            }
+                            // ignore: use_build_context_synchronously
                             if (response.isLeft()) AnimatedSnackBar.material('Failed', type: AnimatedSnackBarType.success).show(context);
                             setState(() {});
                           },
@@ -283,32 +335,83 @@ class _ComplaintPageState extends State<ComplaintPage> {
                             ),
                           ),
                         )
-                      : Button(
-                          onPressed: () async {
-                            print("object");
-                            ComplainData req = ComplainData(
-                              description: widget.complainData?.description,
-                              location: widget.complainData?.location,
-                              image: widget.complainData?.image,
-                              uid: widget.complainData?.uid,
-                              status: status,
-                            );
-                            final response = await ComplainDataSource().updateComplaintData(req);
-                            // ignore: use_build_context_synchronously
-                            if (response.isRight()) AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
-                            setState(() {});
-                          },
-                          child: Center(
-                            child: Text(
-                              'Save Change',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: Colors.white,
+                      : widget.user.role == null && widget.complainData != null
+                          ? Button(
+                              color: const Color.fromARGB(255, 177, 21, 10),
+                              isLoading: isLoadingDelete,
+                              isDisabled: isLoadingDelete,
+                              onPressed: () async {
+                                setState(() {
+                                  isLoadingDelete = true;
+                                });
+
+                                final response = await ComplainDataSource().deleteComplaint(widget.complainData?.uid ?? '');
+                                setState(() {
+                                  isLoadingDelete = false;
+                                });
+                                if (response.isRight()) {
+                                  // ignore: use_build_context_synchronously
+                                  AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
+                                  Navigator.push(
+                                    // ignore: use_build_context_synchronously
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => HomePage(
+                                        idUser: widget.user.uid ?? '',
+                                      ),
+                                    ),
+                                  );
+                                }
+                                setState(() {});
+                              },
+                              child: Center(
+                                child: Text(
+                                  'Delete Data',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        )
+                            )
+                          : Button(
+                              isLoading: isLoadingEdit,
+                              isDisabled: isLoadingEdit,
+                              onPressed: () async {
+                                setState(() {
+                                  isLoadingEdit = true;
+                                });
+
+                                ComplainData req = ComplainData(
+                                  description: widget.complainData?.description,
+                                  location: widget.complainData?.location,
+                                  image: widget.complainData?.image,
+                                  uid: widget.complainData?.uid,
+                                  status: status,
+                                );
+                                final response = await ComplainDataSource().updateComplaintData(req);
+                                setState(() {
+                                  isLoadingEdit = false;
+                                });
+                                // ignore: use_build_context_synchronously
+                                if (response.isRight()) {
+                                  // ignore: use_build_context_synchronously
+                                  AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
+                                }
+                                setState(() {});
+                              },
+                              child: Center(
+                                child: Text(
+                                  'Save Change',
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
                 ],
               ),
             ),

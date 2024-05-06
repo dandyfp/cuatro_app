@@ -26,8 +26,9 @@ if (flutterVersionName == null) {
 }
 
 android {
+    
     namespace "com.example.cuatro_application"
-    compileSdk flutter.compileSdkVersion
+    compileSdk 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -68,4 +69,8 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.android.support:multidex:1.0.3"
+
+}

@@ -32,7 +32,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: userData?.role != 'admin'
+      floatingActionButton: userData?.role != 'admin' && selectedPage == 0
           ? Padding(
               padding: const EdgeInsets.only(bottom: 100.0),
               child: InkWell(
@@ -83,8 +83,11 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             children: [
-              ListComplaintPage(
-                user: userData ?? UserData(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: ListComplaintPage(
+                  user: userData ?? UserData(),
+                ),
               ),
               ProfilePage(
                 id: widget.idUser,
