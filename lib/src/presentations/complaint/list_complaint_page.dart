@@ -2,7 +2,6 @@
 import 'package:cuatro_application/src/presentations/complaint/complaint_page.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:cuatro_application/src/core/components/style.dart';
@@ -10,7 +9,7 @@ import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
 import 'package:cuatro_application/src/data/complain_datasource.dart';
 import 'package:cuatro_application/src/data/models/user_data.dart';
 
-class ListComplaintPage extends StatelessWidget {
+class ListComplaintPage extends StatefulWidget {
   final UserData user;
   const ListComplaintPage({
     super.key,
@@ -18,14 +17,19 @@ class ListComplaintPage extends StatelessWidget {
   });
 
   @override
+  State<ListComplaintPage> createState() => _ListComplaintPageState();
+}
+
+class _ListComplaintPageState extends State<ListComplaintPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder(
-        future: ComplainDataSource().getAllComplaint(),
+        future: ComplainDataSource().getAllComplaint(widget.user.uid ?? ''),
         builder: (context, snapshot) {
           Future refresh() async {
-            await ComplainDataSource().getAllComplaint();
+            await ComplainDataSource().getAllComplaint(widget.user.uid ?? '');
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -52,7 +56,7 @@ class ListComplaintPage extends StatelessWidget {
                         Align(
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            'Hi, \nWelcome ${user.name}',
+                            'Hi, \nWelcome ${widget.user.name}',
                             style: GoogleFonts.poppins(
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
@@ -77,8 +81,8 @@ class ListComplaintPage extends StatelessWidget {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => ComplaintPage(
-                                            idUser: user.uid ?? "",
-                                            user: user,
+                                            idUser: widget.user.uid ?? "",
+                                            user: widget.user,
                                             complainData: item,
                                             isEdit: true,
                                           ),

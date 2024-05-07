@@ -4,7 +4,6 @@ import 'package:cuatro_application/src/core/components/textfield.dart';
 import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
 import 'package:cuatro_application/src/core/helpers/validator/validator.dart';
 import 'package:cuatro_application/src/data/auth_datasource.dart';
-import 'package:cuatro_application/src/data/complain_datasource.dart';
 import 'package:cuatro_application/src/presentations/auth/register_page.dart';
 import 'package:cuatro_application/src/presentations/auth/reset_password_page.dart';
 import 'package:cuatro_application/src/presentations/home/home_page.dart';
@@ -164,7 +163,6 @@ class _LoginPageState extends State<LoginPage> {
                         horizontalSpace(5),
                         InkWell(
                           onTap: () {
-                            ComplainDataSource().getAllComplaint();
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -188,7 +186,6 @@ class _LoginPageState extends State<LoginPage> {
                     verticalSpace(30),
                     InkWell(
                       onTap: () {
-                        ComplainDataSource().getAllComplaint();
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -198,7 +195,7 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       child: Center(
                         child: Text(
-                          "Forgor Password? ",
+                          "Forgot Password? ",
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.w500,
                             fontSize: 14,

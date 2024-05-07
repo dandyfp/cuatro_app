@@ -14,12 +14,14 @@ class ComplainData {
   String? description;
   String? image;
   String? status;
+  String? idUser;
 
   ComplainData({
     this.location,
     this.description,
     this.image,
     this.uid,
+    this.idUser,
     this.status,
   });
 
@@ -29,6 +31,7 @@ class ComplainData {
         image: json["image"],
         uid: json["uid"],
         status: json["status"],
+        idUser: json["idUser"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -36,6 +39,7 @@ class ComplainData {
         "description": description,
         "image": image,
         "uid": uid,
+        "idUser": idUser,
         "status": status,
       };
 }
