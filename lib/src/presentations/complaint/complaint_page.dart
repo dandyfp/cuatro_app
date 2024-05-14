@@ -186,14 +186,13 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     ),
             ),
             verticalSpace(10),
-            if (imgDate != null)
-              Text(
-                'Create At :$imgDate',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+            Text(
+              'Create At :${imgDate ?? widget.complainData?.imgDate}',
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
+            ),
             verticalSpace(30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -316,6 +315,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                               idUser: widget.idUser,
                               latitude: latitude,
                               longitude: longitude,
+                              imageDate: imgDate,
                             );
                             setState(() {
                               isLoading = false;

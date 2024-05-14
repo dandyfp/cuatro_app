@@ -34,14 +34,14 @@ class ComplainDataSource {
     }
   }
 
-  Future<Either<String, ComplainData>> createComplain({
-    required String location,
-    required String description,
-    required String image,
-    required String idUser,
-    String? latitude,
-    String? longitude,
-  }) async {
+  Future<Either<String, ComplainData>> createComplain(
+      {required String location,
+      required String description,
+      required String image,
+      required String idUser,
+      String? latitude,
+      String? longitude,
+      String? imgDate}) async {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
     CollectionReference<Map<String, dynamic>> complaint = FirebaseFirestore.instance.collection('complaints');
@@ -55,6 +55,7 @@ class ComplainDataSource {
         'status': 'Waiting',
         'latitude': latitude,
         'longitude': longitude,
+        'imgDate': imgDate,
       },
     );
 
@@ -77,6 +78,7 @@ class ComplainDataSource {
     required String idUser,
     String? latitude,
     String? longitude,
+    String? imageDate,
   }) async {
     String fileName = basename(imageFile.path);
 
@@ -92,6 +94,7 @@ class ComplainDataSource {
         idUser: idUser,
         latitude: latitude,
         longitude: longitude,
+        imgDate: imageDate,
       );
 
       return createComplaint;

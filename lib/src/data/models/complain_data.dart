@@ -15,6 +15,7 @@ class ComplainData {
   String? image;
   String? status;
   String? idUser;
+  String? imgDate;
 
   ComplainData({
     this.location,
@@ -23,6 +24,7 @@ class ComplainData {
     this.uid,
     this.idUser,
     this.status,
+    this.imgDate,
   });
 
   factory ComplainData.fromJson(Map<String, dynamic> json) => ComplainData(
@@ -32,6 +34,7 @@ class ComplainData {
         uid: json["uid"],
         status: json["status"],
         idUser: json["idUser"],
+        imgDate: json["imgDate"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -41,5 +44,6 @@ class ComplainData {
         "uid": uid,
         "idUser": idUser,
         "status": status,
+        "imageDate": imgDate,
       };
 }
