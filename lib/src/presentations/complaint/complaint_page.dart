@@ -45,6 +45,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
   bool isLoadingDelete = false;
   String? latitude;
   String? longitude;
+  String? imgDate;
 
   @override
   void dispose() {
@@ -106,7 +107,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                   onTap: () async {
                                     xFile = await ImagePicker().pickImage(source: ImageSource.camera);
 
-                                    setState(() {});
+                                    setState(() {
+                                      imgDate = DateTime.now().toString();
+                                    });
                                   },
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
@@ -128,7 +131,10 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                 InkWell(
                                   onTap: () async {
                                     xFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-                                    setState(() {});
+
+                                    setState(() {
+                                      imgDate = DateTime.now().toString();
+                                    });
                                   },
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
@@ -179,6 +185,15 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       ),
                     ),
             ),
+            verticalSpace(10),
+            if (imgDate != null)
+              Text(
+                'Create At :$imgDate',
+                style: GoogleFonts.poppins(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
             verticalSpace(30),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
