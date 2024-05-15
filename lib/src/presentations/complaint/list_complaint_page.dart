@@ -26,10 +26,14 @@ class _ListComplaintPageState extends State<ListComplaintPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: FutureBuilder(
-        future: ComplainDataSource().getAllComplaint(widget.user.uid ?? ''),
+        future: widget.user.role != 'admin'
+            ? ComplainDataSource().getAllComplaint(widget.user.uid ?? '')
+            : ComplainDataSource().getAllComplaintForAdmin(),
         builder: (context, snapshot) {
           Future refresh() async {
-            await ComplainDataSource().getAllComplaint(widget.user.uid ?? '');
+            widget.user.role != 'admin'
+                ? await ComplainDataSource().getAllComplaint(widget.user.uid ?? '')
+                : await ComplainDataSource().getAllComplaintForAdmin();
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {

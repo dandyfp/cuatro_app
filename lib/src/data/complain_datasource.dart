@@ -109,4 +109,10 @@ class ComplainDataSource {
     List<ComplainData> data = complaints.docs.map((e) => ComplainData.fromJson(e.data())).toList();
     return data;
   }
+
+  Future<List<ComplainData>> getAllComplaintForAdmin() async {
+    QuerySnapshot<Map<String, dynamic>> complaints = await FirebaseFirestore.instance.collection('complaints').get();
+    List<ComplainData> data = complaints.docs.map((e) => ComplainData.fromJson(e.data())).toList();
+    return data;
+  }
 }
