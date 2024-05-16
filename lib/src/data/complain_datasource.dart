@@ -21,12 +21,20 @@ class ComplainDataSource {
   }
 
   Future<Either<String, String>> updateComplaintData(ComplainData complaintData) async {
+    String fileName = basename(complaintData.imageFeedback!.path);
+    Reference reference = FirebaseStorage.instance.ref().child(fileName);
+    await reference.putFile(complaintData.imageFeedback!);
+    String downloadUrl = await reference.getDownloadURL();
+
     DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('complaints/${complaintData.uid}');
 
     DocumentSnapshot<Map<String, dynamic>> result = await documentReference.get();
     if (result.exists) {
       await documentReference.update({
         'status': complaintData.status,
+        'imageFeedback': downloadUrl,
+        'descFeedback': complaintData.feedbackDescription,
+        'dateFeedback': complaintData.feedbackDate,
       });
       return right('Success');
     } else {
@@ -34,14 +42,20 @@ class ComplainDataSource {
     }
   }
 
-  Future<Either<String, ComplainData>> createComplain(
-      {required String location,
-      required String description,
-      required String image,
-      required String idUser,
-      String? latitude,
-      String? longitude,
-      String? imgDate}) async {
+  Future<Either<String, ComplainData>> createComplain({
+    required String location,
+    required String description,
+    required String image,
+    required String idUser,
+    required String name,
+    required String whatsapp,
+    String? latitude,
+    String? longitude,
+    String? imgDate,
+    String? imageFeedback,
+    String? descFeedback,
+    String? dateFeedback,
+  }) async {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
     CollectionReference<Map<String, dynamic>> complaint = FirebaseFirestore.instance.collection('complaints');
@@ -56,6 +70,11 @@ class ComplainDataSource {
         'latitude': latitude,
         'longitude': longitude,
         'imgDate': imgDate,
+        'imageFeedback': imageFeedback,
+        'descFeedback': descFeedback,
+        'dateFeedback': dateFeedback,
+        'name': name,
+        'whatsapp': whatsapp,
       },
     );
 
@@ -76,17 +95,31 @@ class ComplainDataSource {
     required String location,
     required String description,
     required String idUser,
+    required String name,
+    required String whatsapp,
     String? latitude,
     String? longitude,
     String? imageDate,
+    File? imageFeedback,
+    String? descFeedback,
+    String? dateFeedback,
   }) async {
     String fileName = basename(imageFile.path);
 
     Reference reference = FirebaseStorage.instance.ref().child(fileName);
+    /*  Reference? referenceImageFeedback;
+    if (imageFeedback != null) {
+      String fileNameImageFeedback = basename(imageFeedback.path);
+      referenceImageFeedback = FirebaseStorage.instance.ref().child(fileNameImageFeedback);
+    } */
 
     try {
       await reference.putFile(imageFile);
+      /*  if (referenceImageFeedback != null) {
+        await referenceImageFeedback.putFile(imageFile);
+      } */
       String downloadUrl = await reference.getDownloadURL();
+      // String downloadUrlImageFeedback = await referenceImageFeedback!.getDownloadURL();
       var createComplaint = await createComplain(
         description: description,
         location: location,
@@ -95,6 +128,11 @@ class ComplainDataSource {
         latitude: latitude,
         longitude: longitude,
         imgDate: imageDate,
+        imageFeedback: '',
+        descFeedback: '',
+        dateFeedback: '',
+        name: name,
+        whatsapp: whatsapp,
       );
 
       return createComplaint;

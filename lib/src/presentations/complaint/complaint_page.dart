@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:cuatro_application/src/data/models/complain_data.dart';
 import 'package:cuatro_application/src/data/models/user_data.dart';
+import 'package:cuatro_application/src/presentations/complaint/feedback_page.dart';
 import 'package:cuatro_application/src/presentations/home/home_page.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -38,6 +38,8 @@ class ComplaintPage extends StatefulWidget {
 class _ComplaintPageState extends State<ComplaintPage> {
   final TextEditingController locationController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController whatsappController = TextEditingController();
   XFile? xFile;
   String? status;
   bool isLoadingEdit = false;
@@ -245,6 +247,61 @@ class _ComplaintPageState extends State<ComplaintPage> {
                     ),
                   verticalSpace(30),
                   Text(
+                    'Name',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  if (widget.complainData?.name != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Text(
+                        widget.complainData?.name ?? '',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  verticalSpace(4),
+                  if (widget.complainData?.name == null)
+                    KTextField(
+                      maxLines: 1,
+                      minLines: 1,
+                      controller: nameController,
+                      borderColor: Colors.black,
+                    ),
+                  verticalSpace(30),
+                  Text(
+                    'WhatsApp',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  if (widget.complainData?.whatsapp != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0),
+                      child: Text(
+                        widget.complainData?.whatsapp ?? '',
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  verticalSpace(4),
+                  if (widget.complainData?.whatsapp == null)
+                    KTextField(
+                      maxLines: 1,
+                      minLines: 1,
+                      controller: whatsappController,
+                      keyboardType: TextInputType.phone,
+                      borderColor: Colors.black,
+                    ),
+                  verticalSpace(30),
+                  Text(
                     'Description',
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
@@ -271,7 +328,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       borderColor: Colors.black,
                     ),
                   verticalSpace(30),
-                  if (widget.user.role == "admin")
+                  /*  if (widget.user.role == "admin")
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -299,7 +356,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                         ),
                         verticalSpace(30)
                       ],
-                    ),
+                    ), */
                   widget.isEdit == false && widget.user.role == null
                       ? Button(
                           isLoading: isLoading,
@@ -316,6 +373,8 @@ class _ComplaintPageState extends State<ComplaintPage> {
                               latitude: latitude,
                               longitude: longitude,
                               imageDate: imgDate,
+                              name: nameController.text,
+                              whatsapp: whatsappController.text,
                             );
                             setState(() {
                               isLoading = false;
@@ -351,50 +410,89 @@ class _ComplaintPageState extends State<ComplaintPage> {
                           ),
                         )
                       : widget.user.role == null && widget.complainData != null
-                          ? Button(
-                              color: const Color.fromARGB(255, 177, 21, 10),
-                              isLoading: isLoadingDelete,
-                              isDisabled: isLoadingDelete,
-                              onPressed: () async {
-                                setState(() {
-                                  isLoadingDelete = true;
-                                });
-
-                                final response = await ComplainDataSource().deleteComplaint(widget.complainData?.uid ?? '');
-                                setState(() {
-                                  isLoadingDelete = false;
-                                });
-                                if (response.isRight()) {
-                                  // ignore: use_build_context_synchronously
-                                  AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
-                                  Navigator.push(
-                                    // ignore: use_build_context_synchronously
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => HomePage(
-                                        idUser: widget.user.uid ?? '',
+                          ? Column(
+                              children: [
+                                Button(
+                                  isDisabled: widget.complainData?.feedbackImage == '' || widget.complainData?.feedbackImage == null,
+                                  color: Colors.blue,
+                                  onPressed: () {
+                                    Navigator.push(
+                                      // ignore: use_build_context_synchronously
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FeedBackPage(
+                                          complainData: widget.complainData!,
+                                          user: widget.user,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Center(
+                                    child: Text(
+                                      'See Fedback',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                  );
-                                }
-                                setState(() {});
-                              },
-                              child: Center(
-                                child: Text(
-                                  'Delete Data',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
                                   ),
                                 ),
-                              ),
+                                verticalSpace(10),
+                                Button(
+                                  color: const Color.fromARGB(255, 177, 21, 10),
+                                  isLoading: isLoadingDelete,
+                                  isDisabled: isLoadingDelete,
+                                  onPressed: () async {
+                                    setState(() {
+                                      isLoadingDelete = true;
+                                    });
+
+                                    final response = await ComplainDataSource().deleteComplaint(widget.complainData?.uid ?? '');
+                                    setState(() {
+                                      isLoadingDelete = false;
+                                    });
+                                    if (response.isRight()) {
+                                      // ignore: use_build_context_synchronously
+                                      AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
+                                      Navigator.push(
+                                        // ignore: use_build_context_synchronously
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => HomePage(
+                                            idUser: widget.user.uid ?? '',
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    setState(() {});
+                                  },
+                                  child: Center(
+                                    child: Text(
+                                      'Delete Data',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             )
                           : Button(
                               isLoading: isLoadingEdit,
                               isDisabled: isLoadingEdit,
                               onPressed: () async {
-                                setState(() {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FeedBackPage(
+                                        complainData: widget.complainData!,
+                                        user: widget.user,
+                                      ),
+                                    ));
+                                /* setState(() {
                                   isLoadingEdit = true;
                                 });
 
@@ -414,11 +512,11 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                   // ignore: use_build_context_synchronously
                                   AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
                                 }
-                                setState(() {});
+                                setState(() {}); */
                               },
                               child: Center(
                                 child: Text(
-                                  'Save Change',
+                                  'Feedback',
                                   style: GoogleFonts.poppins(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,

@@ -3,12 +3,14 @@
 //     final complainData = complainDataFromJson(jsonString);
 
 import 'dart:convert';
+import 'dart:io';
 
 ComplainData complainDataFromJson(String str) => ComplainData.fromJson(json.decode(str));
 
 String complainDataToJson(ComplainData data) => json.encode(data.toJson());
 
 class ComplainData {
+  File? imageFeedback;
   String? uid;
   String? location;
   String? description;
@@ -16,16 +18,26 @@ class ComplainData {
   String? status;
   String? idUser;
   String? imgDate;
+  String? feedbackDate;
+  String? feedbackImage;
+  String? feedbackDescription;
+  String? name;
+  String? whatsapp;
 
-  ComplainData({
-    this.location,
-    this.description,
-    this.image,
-    this.uid,
-    this.idUser,
-    this.status,
-    this.imgDate,
-  });
+  ComplainData(
+      {this.location,
+      this.description,
+      this.image,
+      this.uid,
+      this.idUser,
+      this.status,
+      this.imgDate,
+      this.feedbackDate,
+      this.feedbackImage,
+      this.feedbackDescription,
+      this.imageFeedback,
+      this.name,
+      this.whatsapp});
 
   factory ComplainData.fromJson(Map<String, dynamic> json) => ComplainData(
         location: json["location"],
@@ -35,6 +47,11 @@ class ComplainData {
         status: json["status"],
         idUser: json["idUser"],
         imgDate: json["imgDate"],
+        feedbackImage: json["imageFeedback"],
+        feedbackDate: json["dateFeedback"],
+        feedbackDescription: json["descFeedback"],
+        whatsapp: json["whatsapp"],
+        name: json["name"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -45,5 +62,10 @@ class ComplainData {
         "idUser": idUser,
         "status": status,
         "imageDate": imgDate,
+        'imageFeedback': feedbackImage,
+        'descFeedback': feedbackDescription,
+        'dateFeedback': feedbackDate,
+        'name': name,
+        'whatsapp': whatsapp,
       };
 }

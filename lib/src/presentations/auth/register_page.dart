@@ -93,7 +93,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   verticalSpace(30),
                   Text(
-                    widget.isForgotPassword ? 'New password' : 'Passwoord',
+                    widget.isForgotPassword ? 'New password' : 'Password',
                     style: GoogleFonts.poppins(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
