@@ -66,7 +66,7 @@ class ComplainDataSource {
         'image': image,
         'description': description,
         'uid': id,
-        'status': 'Waiting',
+        'status': 'Pending',
         'latitude': latitude,
         'longitude': longitude,
         'imgDate': imgDate,

@@ -196,7 +196,6 @@ class _FeedBackPageState extends State<FeedBackPage> {
                       },
                       items: const [
                         'Pending',
-                        'Progress',
                         'Complete',
                         'Reject',
                       ],
@@ -230,7 +229,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
               if (widget.user.role == 'admin')
                 Button(
                   isLoading: isLoading,
-                  isDisabled: isLoading,
+                  isDisabled: widget.complainData.feedbackImage == null,
                   onPressed: () async {
                     setState(() {
                       isLoading = true;
