@@ -229,7 +229,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
               if (widget.user.role == 'admin')
                 Button(
                   isLoading: isLoading,
-                  isDisabled: widget.complainData.feedbackImage == null,
+                  isDisabled: widget.complainData.feedbackImage != "",
                   onPressed: () async {
                     setState(() {
                       isLoading = true;
