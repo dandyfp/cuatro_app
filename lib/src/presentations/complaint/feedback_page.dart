@@ -251,7 +251,8 @@ class _FeedBackPageState extends State<FeedBackPage> {
                     });
                     // ignore: use_build_context_synchronously
                     if (response.isRight()) {
-                      Navigator.pushReplacement(
+                      await ComplainDataSource().getAllComplaint(widget.user.uid ?? "");
+                      /* Navigator.pushReplacement(
                         // ignore: use_build_context_synchronously
                         context,
                         MaterialPageRoute(
@@ -259,7 +260,7 @@ class _FeedBackPageState extends State<FeedBackPage> {
                             idUser: widget.user.uid ?? '',
                           ),
                         ),
-                      );
+                      ); */
                       // ignore: use_build_context_synchronously
                       AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
                     }
