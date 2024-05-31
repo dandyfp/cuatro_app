@@ -23,21 +23,26 @@ class ComplainData {
   String? feedbackDescription;
   String? name;
   String? whatsapp;
+  String? typeTrash;
+  String? rating;
 
-  ComplainData(
-      {this.location,
-      this.description,
-      this.image,
-      this.uid,
-      this.idUser,
-      this.status,
-      this.imgDate,
-      this.feedbackDate,
-      this.feedbackImage,
-      this.feedbackDescription,
-      this.imageFeedback,
-      this.name,
-      this.whatsapp});
+  ComplainData({
+    this.location,
+    this.description,
+    this.image,
+    this.uid,
+    this.idUser,
+    this.status,
+    this.imgDate,
+    this.feedbackDate,
+    this.feedbackImage,
+    this.feedbackDescription,
+    this.imageFeedback,
+    this.name,
+    this.whatsapp,
+    this.typeTrash,
+    this.rating,
+  });
 
   factory ComplainData.fromJson(Map<String, dynamic> json) => ComplainData(
         location: json["location"],
@@ -52,6 +57,8 @@ class ComplainData {
         feedbackDescription: json["descFeedback"],
         whatsapp: json["whatsapp"],
         name: json["name"],
+        typeTrash: json["typeTrash"],
+        rating: json["rating"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -67,5 +74,7 @@ class ComplainData {
         'dateFeedback': feedbackDate,
         'name': name,
         'whatsapp': whatsapp,
+        'typeTrash': typeTrash,
+        'rating': rating,
       };
 }

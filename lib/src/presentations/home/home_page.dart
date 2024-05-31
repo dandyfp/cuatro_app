@@ -2,10 +2,12 @@
 import 'package:cuatro_application/src/data/auth_datasource.dart';
 import 'package:cuatro_application/src/data/models/user_data.dart';
 import 'package:cuatro_application/src/presentations/complaint/list_complaint_page.dart';
+import 'package:cuatro_application/src/presentations/complaint/report_page.dart';
 import 'package:cuatro_application/src/presentations/profile/profile_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cuatro_application/src/presentations/complaint/complaint_page.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class HomePage extends StatefulWidget {
   final String idUser;
@@ -19,13 +21,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  UserData? userData;
   @override
   void initState() {
     getUserDetail();
+
     super.initState();
   }
-
-  UserData? userData;
 
   PageController pageController = PageController();
   int selectedPage = 0;
@@ -92,6 +94,10 @@ class _HomePageState extends State<HomePage> {
               ProfilePage(
                 id: widget.idUser,
               ),
+              if (userData?.role == 'admin')
+                ReportPage(
+                  user: userData ?? UserData(),
+                )
             ],
           ),
           Align(
@@ -174,6 +180,36 @@ class _HomePageState extends State<HomePage> {
                       ],
                     ),
                   ),
+                  if (userData?.role == 'admin')
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          selectedPage = 2;
+                        });
+                        pageController.animateToPage(
+                          selectedPage,
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeInOut,
+                        );
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.file_copy,
+                            color: selectedPage == 2 ? Colors.blue : Colors.black,
+                          ),
+                          Text(
+                            'Report',
+                            style: TextStyle(
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                              color: selectedPage == 2 ? Colors.blue : Colors.black,
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -185,7 +221,14 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> getUserDetail() async {
     var result = await AuthDataSource().getUser(widget.idUser);
-    result.fold((l) => null, (r) => userData = r);
+    result.fold((l) => null, (r) {
+      userData = r;
+      Fluttertoast.showToast(
+        msg: 'Welcome ${r.name}',
+        fontSize: 20,
+      );
+    });
+
     setState(() {});
   }
 }

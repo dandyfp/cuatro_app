@@ -7,7 +7,6 @@ import 'package:cuatro_application/src/core/helpers/ui_helpers.dart';
 import 'package:cuatro_application/src/data/complain_datasource.dart';
 import 'package:cuatro_application/src/data/models/complain_data.dart';
 import 'package:cuatro_application/src/data/models/user_data.dart';
-import 'package:cuatro_application/src/presentations/home/home_page.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
@@ -188,6 +187,16 @@ class _FeedBackPageState extends State<FeedBackPage> {
                     ),
                   if (widget.user.role == 'admin')
                     DropdownSearch(
+                      dropdownBuilder: (context, selectedItem) {
+                        return Text(selectedItem.toString(),
+                            style: TextStyle(
+                              color: status == "Complete"
+                                  ? Colors.green
+                                  : status == "Reject"
+                                      ? Colors.red
+                                      : Colors.black,
+                            ));
+                      },
                       selectedItem: widget.complainData.status ?? 'Choose Status',
                       onChanged: (value) {
                         setState(() {

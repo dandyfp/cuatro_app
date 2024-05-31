@@ -35,6 +35,25 @@ class ComplainDataSource {
         'imageFeedback': downloadUrl,
         'descFeedback': complaintData.feedbackDescription,
         'dateFeedback': complaintData.feedbackDate,
+        'rating': complaintData.rating,
+      });
+      return right('Success');
+    } else {
+      return left('Failed');
+    }
+  }
+
+  Future<Either<String, String>> updateComplaintDataRating(ComplainData complaintData) async {
+    DocumentReference<Map<String, dynamic>> documentReference = FirebaseFirestore.instance.doc('complaints/${complaintData.uid}');
+
+    DocumentSnapshot<Map<String, dynamic>> result = await documentReference.get();
+    if (result.exists) {
+      await documentReference.update({
+        'status': complaintData.status,
+        'imageFeedback': complaintData.feedbackImage,
+        'descFeedback': complaintData.feedbackDescription,
+        'dateFeedback': complaintData.feedbackDate,
+        'rating': complaintData.rating,
       });
       return right('Success');
     } else {
@@ -55,6 +74,7 @@ class ComplainDataSource {
     String? imageFeedback,
     String? descFeedback,
     String? dateFeedback,
+    String? typeTrash,
   }) async {
     String date = DateTime.now().toString();
     String id = 'cpl-$date-$idUser';
@@ -75,6 +95,7 @@ class ComplainDataSource {
         'dateFeedback': dateFeedback,
         'name': name,
         'whatsapp': whatsapp,
+        'typeTrash': typeTrash,
       },
     );
 
@@ -103,6 +124,7 @@ class ComplainDataSource {
     File? imageFeedback,
     String? descFeedback,
     String? dateFeedback,
+    required String typeTrash,
   }) async {
     String fileName = basename(imageFile.path);
 
@@ -133,6 +155,7 @@ class ComplainDataSource {
         dateFeedback: '',
         name: name,
         whatsapp: whatsapp,
+        typeTrash: typeTrash,
       );
 
       return createComplaint;
@@ -150,6 +173,20 @@ class ComplainDataSource {
 
   Future<List<ComplainData>> getAllComplaintForAdmin() async {
     QuerySnapshot<Map<String, dynamic>> complaints = await FirebaseFirestore.instance.collection('complaints').get();
+    List<ComplainData> data = complaints.docs.map((e) => ComplainData.fromJson(e.data())).toList();
+    return data;
+  }
+
+  Future<List<ComplainData>> getAllComplaintComplete() async {
+    QuerySnapshot<Map<String, dynamic>> complaints =
+        await FirebaseFirestore.instance.collection('complaints').where('status', isEqualTo: 'Complete').get();
+    List<ComplainData> data = complaints.docs.map((e) => ComplainData.fromJson(e.data())).toList();
+    return data;
+  }
+
+  Future<List<ComplainData>> getAllComplaintReject() async {
+    QuerySnapshot<Map<String, dynamic>> complaints =
+        await FirebaseFirestore.instance.collection('complaints').where('status', isEqualTo: 'reject').get();
     List<ComplainData> data = complaints.docs.map((e) => ComplainData.fromJson(e.data())).toList();
     return data;
   }

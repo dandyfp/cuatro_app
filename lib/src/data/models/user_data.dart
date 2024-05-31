@@ -14,13 +14,21 @@ class UserData {
   String? password;
   String? role;
   String? uid;
+  String? whatsapp;
+  String? imageIdentity;
+  String? imageProfile;
+  String? status;
 
   UserData({
+    this.imageProfile,
+    this.whatsapp,
     this.name,
     this.email,
     this.password,
     this.role,
     this.uid,
+    this.imageIdentity,
+    this.status,
   });
 
   factory UserData.fromJson(Map<String, dynamic> json) => UserData(
@@ -29,6 +37,10 @@ class UserData {
         password: json["password"],
         role: json["role"],
         uid: json["uid"],
+        whatsapp: json["whatsapp"],
+        imageProfile: json["imageProfile"],
+        imageIdentity: json["imageIdentity"],
+        status: json["status"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -37,5 +49,9 @@ class UserData {
         "email": email,
         "password": password,
         "role": role,
+        "imageIdentity": imageIdentity,
+        "imageProfile": imageProfile,
+        "whatsapp": whatsapp,
+        "status": status,
       };
 }

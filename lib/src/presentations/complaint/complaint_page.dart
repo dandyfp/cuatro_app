@@ -6,8 +6,10 @@ import 'package:cuatro_application/src/data/models/complain_data.dart';
 import 'package:cuatro_application/src/data/models/user_data.dart';
 import 'package:cuatro_application/src/presentations/complaint/feedback_page.dart';
 import 'package:cuatro_application/src/presentations/home/home_page.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -48,6 +50,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
   String? latitude;
   String? longitude;
   String? imgDate;
+  String? typeTrash;
 
   @override
   void dispose() {
@@ -246,61 +249,78 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       },
                     ),
                   verticalSpace(30),
-                  Text(
-                    'Name',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
                   if (widget.complainData?.name != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Text(
-                        widget.complainData?.name ?? '',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    Column(
+                      children: [
+                        Text(
+                          'Name',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            widget.complainData?.name ?? '',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   verticalSpace(4),
-                  if (widget.complainData?.name == null)
-                    KTextField(
-                      maxLines: 1,
-                      minLines: 1,
-                      controller: nameController,
-                      borderColor: Colors.black,
-                    ),
-                  verticalSpace(30),
-                  Text(
-                    'WhatsApp',
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                    ),
-                  ),
-                  if (widget.complainData?.whatsapp != null)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
-                      child: Text(
-                        widget.complainData?.whatsapp ?? '',
-                        style: GoogleFonts.poppins(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                  if (widget.user.role == "admin")
+                    Column(
+                      children: [
+                        verticalSpace(20),
+                        Text(
+                          'WhatsApp',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
                         ),
-                      ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            widget.complainData?.whatsapp ?? '-',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  if (widget.complainData?.whatsapp != null && widget.user.role != "admin")
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        verticalSpace(20),
+                        Text(
+                          'WhatsApp',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(
+                            widget.complainData?.whatsapp ?? '',
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                        verticalSpace(20),
+                      ],
                     ),
                   verticalSpace(4),
-                  if (widget.complainData?.whatsapp == null)
-                    KTextField(
-                      maxLines: 1,
-                      minLines: 1,
-                      controller: whatsappController,
-                      keyboardType: TextInputType.phone,
-                      borderColor: Colors.black,
-                    ),
-                  verticalSpace(30),
                   Text(
                     'Description',
                     style: GoogleFonts.poppins(
@@ -310,7 +330,7 @@ class _ComplaintPageState extends State<ComplaintPage> {
                   ),
                   if (widget.complainData?.description != null)
                     Padding(
-                      padding: const EdgeInsets.only(top: 20.0),
+                      padding: const EdgeInsets.only(top: 4.0),
                       child: Text(
                         widget.complainData?.description ?? '',
                         style: GoogleFonts.poppins(
@@ -328,6 +348,40 @@ class _ComplaintPageState extends State<ComplaintPage> {
                       borderColor: Colors.black,
                     ),
                   verticalSpace(30),
+                  Text(
+                    'Classification',
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  verticalSpace(4),
+                  if (widget.user.role == "admin")
+                    Text(
+                      widget.complainData?.typeTrash ?? "",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  if (widget.user.role != "admin")
+                    DropdownSearch(
+                      selectedItem: widget.complainData?.typeTrash ?? 'Choose',
+                      dropdownBuilder: (context, selectedItem) {
+                        return Text(selectedItem.toString(), style: const TextStyle());
+                      },
+                      onChanged: (value) {
+                        setState(() {
+                          typeTrash = value;
+                        });
+                      },
+                      items: const [
+                        'LEGAL',
+                        'ILEGAL',
+                      ],
+                    ),
+                  verticalSpace(30),
+
                   /*  if (widget.user.role == "admin")
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -373,8 +427,9 @@ class _ComplaintPageState extends State<ComplaintPage> {
                               latitude: latitude,
                               longitude: longitude,
                               imageDate: imgDate,
-                              name: nameController.text,
-                              whatsapp: whatsappController.text,
+                              name: widget.user.name ?? '',
+                              whatsapp: widget.user.whatsapp ?? '',
+                              typeTrash: typeTrash ?? '',
                             );
                             setState(() {
                               isLoading = false;
@@ -524,7 +579,109 @@ class _ComplaintPageState extends State<ComplaintPage> {
                                   ),
                                 ),
                               ),
-                            )
+                            ),
+                  verticalSpace(20),
+                  if (widget.user.role != 'admin' && widget.complainData?.status == 'Complete')
+                    Button(
+                      isLoading: isLoadingEdit,
+                      isDisabled: isLoadingEdit,
+                      onPressed: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                verticalSpace(20),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 60.0),
+                                  child: Text(
+                                    'Rating',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                                verticalSpace(20),
+                                Center(
+                                  child: RatingBar.builder(
+                                    initialRating:
+                                        widget.complainData?.rating == null ? 0 : double.parse(widget.complainData?.rating.toString() ?? '0'),
+                                    itemBuilder: (context, index) {
+                                      return const Icon(Icons.star);
+                                    },
+                                    onRatingUpdate: (value) async {
+                                      ComplainData complainData = ComplainData(
+                                        description: widget.complainData?.description,
+                                        feedbackDate: widget.complainData?.feedbackDate,
+                                        feedbackDescription: widget.complainData?.feedbackDescription,
+                                        feedbackImage: widget.complainData?.feedbackImage,
+                                        idUser: widget.complainData?.idUser,
+                                        image: widget.complainData?.image,
+                                        imgDate: widget.complainData?.imgDate,
+                                        location: widget.complainData?.location,
+                                        name: widget.complainData?.name,
+                                        uid: widget.complainData?.uid,
+                                        status: widget.complainData?.status,
+                                        typeTrash: widget.complainData?.typeTrash,
+                                        whatsapp: widget.complainData?.whatsapp,
+                                        rating: value.toString(),
+                                      );
+
+                                      final response = await ComplainDataSource().updateComplaintDataRating(complainData);
+
+                                      if (response.isRight()) {
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.pop(context);
+                                        // ignore: use_build_context_synchronously
+                                        AnimatedSnackBar.material(response.toString(), type: AnimatedSnackBarType.success).show(context);
+                                      }
+                                      setState(() {});
+                                    },
+                                  ),
+                                ),
+                                verticalSpace(10),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 70.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Bad',
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Good',
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                verticalSpace(100),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Center(
+                        child: Text(
+                          'Rating',
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
